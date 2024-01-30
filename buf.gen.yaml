@@ -1,0 +1,15 @@
+# The buf.gen.yaml file defines a local generation template, and is used
+# by the buf generate command to generate code for the language(s) of
+# your choice.
+# Learn more: https://docs.buf.build/configuration/v1/buf-gen-yaml
+version: v1
+plugins:
+  - plugin: es
+    opt: target=ts
+    out: src/gen
+  - plugin: aelf-es
+    # Override the path to the plugin binary.
+    # See https://buf.build/docs/configuration/v1/buf-gen-yaml#path
+    path: ["tsx", "./src/protoc-gen-aelf-es.ts"]
+    opt: target=ts
+    out: src/gen

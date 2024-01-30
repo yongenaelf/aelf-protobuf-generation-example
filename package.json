@@ -1,0 +1,26 @@
+{
+  "name": "aelf-protobuf-generation-example",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "../../node_modules/typescript/bin/tsc --noEmit",
+    "start": "npx esbuild src/index.ts --serve=localhost:3000 --servedir=www --outdir=www --bundle --global-name=eliza",
+    "test": "tsx --test test/*.ts",
+    "generate": "buf generate proto",
+    "watch": "nodemon --watch src/protoc-gen-aelf-es.ts --exec \"npm run generate\""
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@bufbuild/buf": "^1.28.1",
+    "@bufbuild/protobuf": "^1.7.1",
+    "@bufbuild/protoc-gen-es": "^1.7.1",
+    "@bufbuild/protoplugin": "^1.7.1",
+    "@types/node": "~20.8.6",
+    "aelf-sdk": "^3.4.4",
+    "tsx": "^4.7.0",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}
