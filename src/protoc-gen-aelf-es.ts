@@ -58,10 +58,10 @@ function generateTs(schema: Schema) {
           
           if (method.proto.options && hasExtension(method.proto.options, is_view)) {
             f.print("    // this is a view method");
-            f.print("    return await this.callViewMethod<StringValue, Empty>(request);");
+            f.print("    return await this.callViewMethod<", method.input, ", ", method.output, ">(request);");
           } else {
             f.print("    // this is a send method");
-            f.print("    return await this.callSendMethod<StringValue, Empty>(request);");
+            f.print("    return await this.callSendMethod<", method.input, ">(request);");
           }
 
           f.print("    }");
