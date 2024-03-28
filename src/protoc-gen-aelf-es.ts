@@ -32,7 +32,9 @@ function generateTs(schema: Schema) {
     const f = schema.generateFile(file.name + "_aelf.ts");
     f.preamble(file);
     f.print();
-    f.print("type SendMethod = <P>(methodName: string, p: P) => Promise<{ TransactionId: string }>;");
+    f.print("type SendMethodResponse = { TransactionId: string; };");
+    f.print();
+    f.print("type SendMethod = <P>(methodName: string, p: P) => Promise<SendMethodResponse>;");
     f.print();
     f.print("type ViewMethod = <P, R>(methodName: string, p: P) => Promise<R>;");
     f.print();
@@ -54,12 +56,13 @@ function generateTs(schema: Schema) {
         if (method.methodKind === MethodKind.Unary) {
           f.print();
           f.print(f.jsDoc(method, "    "));
-          f.print("    async ", method.name, "(request: ", method.input, "): Promise<", method.output, "> {");
           
           if (method.proto.options && hasExtension(method.proto.options, is_view)) {
+            f.print("  async ", method.name, "(request: ", method.input, "): Promise<", method.output, "> {");
             f.print("    // this is a view method");
             f.print("    return await this.callViewMethod<", method.input, ", ", method.output, ">('", method.name, "', request);");
           } else {
+            f.print("  async ", method.name, "(request: ", method.input, "): Promise<SendMethodResponse> {");
             f.print("    // this is a send method");
             f.print("    return await this.callSendMethod<", method.input, ">('", method.name, "', request);");
           }
