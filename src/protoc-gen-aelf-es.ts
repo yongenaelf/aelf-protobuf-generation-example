@@ -32,9 +32,9 @@ function generateTs(schema: Schema) {
     const f = schema.generateFile(file.name + "_aelf.ts");
     f.preamble(file);
     f.print();
-    f.print("type SendMethod = <P>(p: P) => Promise<{ TransactionId: string }>;");
+    f.print("type SendMethod = <P>(methodName: string, p: P) => Promise<{ TransactionId: string }>;");
     f.print();
-    f.print("type ViewMethod = <P, R>(p: P) => Promise<R>;");
+    f.print("type ViewMethod = <P, R>(methodName: string, p: P) => Promise<R>;");
     f.print();
     for (const service of file.services) {
       f.print(f.jsDoc(service));
@@ -58,10 +58,10 @@ function generateTs(schema: Schema) {
           
           if (method.proto.options && hasExtension(method.proto.options, is_view)) {
             f.print("    // this is a view method");
-            f.print("    return await this.callViewMethod<", method.input, ", ", method.output, ">(request);");
+            f.print("    return await this.callViewMethod<", method.input, ", ", method.output, ">('", method.name, "', request);");
           } else {
             f.print("    // this is a send method");
-            f.print("    return await this.callSendMethod<", method.input, ">(request);");
+            f.print("    return await this.callSendMethod<", method.input, ">('", method.name, "', request);");
           }
 
           f.print("    }");
