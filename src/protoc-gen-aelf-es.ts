@@ -31,22 +31,37 @@ function generateTs(schema: Schema) {
   for (const file of schema.files) {
     const f = schema.generateFile(file.name + "_aelf.ts");
     f.preamble(file);
+    f.print();
+    f.print("type SendMethod = <P>(p: P) => Promise<{ TransactionId: string }>;");
+    f.print();
+    f.print("type ViewMethod = <P, R>(p: P) => Promise<R>;");
+    f.print();
     for (const service of file.services) {
       f.print(f.jsDoc(service));
-      f.print(f.exportDecl("abstract class", localName(service) + "Client"), " {");
+      f.print(f.exportDecl("class", localName(service) + "Client"), " {");
       f.print();
+      f.print("  private callSendMethod: SendMethod;");
+      f.print();
+      f.print("  private callViewMethod: ViewMethod;");
+      f.print();
+      f.print("  constructor(callSendMethod: SendMethod, callViewMethod: ViewMethod) {");
+      f.print("    this.callSendMethod = callSendMethod;");
+      f.print("    this.callViewMethod = callViewMethod;");
+      f.print("  }");
 
       for (const method of service.methods) {
         
         if (method.methodKind === MethodKind.Unary) {
           f.print();
           f.print(f.jsDoc(method, "    "));
-          f.print("    abstract async ", method.name, "(request: ", method.input, "): Promise<", method.output, "> {");
+          f.print("    async ", method.name, "(request: ", method.input, "): Promise<", method.output, "> {");
           
           if (method.proto.options && hasExtension(method.proto.options, is_view)) {
             f.print("    // this is a view method");
+            f.print("    return await this.callViewMethod<StringValue, Empty>(request);");
           } else {
             f.print("    // this is a send method");
+            f.print("    return await this.callSendMethod<StringValue, Empty>(request);");
           }
 
           f.print("    }");
